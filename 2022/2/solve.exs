@@ -15,22 +15,32 @@ defmodule Solve do
     end
   end
 
+  def play(opponent, me) do
+    cond do
+      opponent == me -> 3
+      opponent == :scissors && me == :rock -> 6
+      opponent == :paper && me == :scissors -> 6
+      opponent == :rock && me == :paper -> 6
+      true -> 0
+    end
+  end
+
+  def use_strategy(hand, strategy) do
+    case {strategy, hand} do
+      {:lose, :rock}     -> :scissors
+      {:lose, :paper}    -> :rock
+      {:lose, :scissors} -> :paper
+      {:draw, hand}      -> hand
+      {:win,  :rock}     -> :paper
+      {:win,  :paper}    -> :scissors
+      {:win,  :scissors} -> :rock
+    end
+  end
+
   def p1(input) do
     Stream.map(input, fn g ->
         [opponent, me] = String.split(g)
-        case {hand(opponent), hand(me)} do
-          {:rock,     :rock}     -> 1 + 3
-          {:rock,     :paper}    -> 2 + 6
-          {:rock,     :scissors} -> 3 + 0
-                 
-          {:paper,    :rock}     -> 1 + 0
-          {:paper,    :paper}    -> 2 + 3
-          {:paper,    :scissors} -> 3 + 6
-                 
-          {:scissors, :rock}     -> 1 + 6
-          {:scissors, :paper}    -> 2 + 0
-          {:scissors, :scissors} -> 3 + 3
-        end
+        play(hand(opponent), hand(me))
       end
     )
     # |> IO.inspect
