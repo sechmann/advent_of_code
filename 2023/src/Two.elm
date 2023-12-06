@@ -3,10 +3,6 @@ module Two exposing (..)
 import Helpers exposing (split)
 
 
-
--- solve :: String -> String
-
-
 type Draw
     = Draw ( Int, Int, Int )
 
@@ -15,35 +11,20 @@ type Game
     = Game ( Int, List Draw )
 
 
-mapRed : Draw -> Int -> Draw
-mapRed (Draw ( _, g, b )) n =
-    Draw ( n, g, b )
-
-
-mapGreen : Draw -> Int -> Draw
-mapGreen (Draw ( r, _, b )) n =
-    Draw ( r, n, b )
-
-
-mapBlue : Draw -> Int -> Draw
-mapBlue (Draw ( r, g, _ )) n =
-    Draw ( r, g, n )
-
-
 mapColor : Draw -> String -> Int -> Draw
-mapColor d c n =
+mapColor (Draw ( r, g, b )) c n =
     case String.toLower c of
         "red" ->
-            mapRed d n
+            Draw ( n, g, b )
 
         "green" ->
-            mapGreen d n
+            Draw ( r, n, b )
 
         "blue" ->
-            mapBlue d n
+            Draw ( r, g, n )
 
         _ ->
-            Debug.log ("Unknown color: " ++ c) d
+            Debug.log ("Attempt to map color" ++ "c " ++ " with number: " ++ String.fromInt n ++ " in cube") (Draw ( r, g, b ))
 
 
 parseColor : String -> Draw -> Draw
@@ -86,29 +67,24 @@ parseGame game =
             Debug.log "Invalid draw" (Game ( -1, [] ))
 
 
-valid : ( Int, Int, Int ) -> Draw -> Bool
-valid ( maxRed, maxGreen, maxBlue ) (Draw ( red, green, blue )) =
+isDrawPossible : ( Int, Int, Int ) -> Draw -> Bool
+isDrawPossible ( maxRed, maxGreen, maxBlue ) (Draw ( red, green, blue )) =
     (red <= maxRed)
         && (green <= maxGreen)
         && (blue <= maxBlue)
 
 
-validGame : ( Int, Int, Int ) -> Game -> Bool
-validGame max (Game ( _, draws )) =
-    List.all (valid max) draws
+isGamePossible : ( Int, Int, Int ) -> Game -> Bool
+isGamePossible max (Game ( _, draws )) =
+    List.all (isDrawPossible max) draws
 
 
-determineMinimumBag : Draw -> ( Int, Int, Int ) -> ( Int, Int, Int )
-determineMinimumBag (Draw ( r, g, b )) ( stateR, stateG, stateB ) =
+findMaxCubeCount : Draw -> ( Int, Int, Int ) -> ( Int, Int, Int )
+findMaxCubeCount (Draw ( r, g, b )) ( stateR, stateG, stateB ) =
     ( max r stateR
     , max g stateG
     , max b stateB
     )
-
-
-toList : ( Int, Int, Int ) -> List Int
-toList ( r, g, b ) =
-    [ r, g, b ]
 
 
 parse : String -> List Game
@@ -122,7 +98,7 @@ parse input =
 solvePart1 : ( Int, Int, Int ) -> List Game -> Int
 solvePart1 max games =
     games
-        |> List.filter (validGame max)
+        |> List.filter (isGamePossible max)
         |> List.map (\(Game ( n, _ )) -> n)
         |> List.sum
 
@@ -132,11 +108,8 @@ solvePart2 games =
     games
         |> List.map
             (\(Game ( _, draws )) ->
-                List.foldl
-                    determineMinimumBag
-                    ( 0, 0, 0 )
-                    draws
+                List.foldl findMaxCubeCount ( 0, 0, 0 ) draws
             )
-        |> List.map toList
+        |> List.map (\( r, g, b ) -> [ r, g, b ])
         |> List.map List.product
         |> List.sum
