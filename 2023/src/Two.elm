@@ -98,14 +98,6 @@ validGame max (Game ( _, draws )) =
     List.all (valid max) draws
 
 
-solvePart1 : ( Int, Int, Int ) -> List Game -> Int
-solvePart1 max games =
-    games
-        |> List.filter (validGame max)
-        |> List.map (\(Game ( n, _ )) -> n)
-        |> List.sum
-
-
 determineMinimumBag : Draw -> ( Int, Int, Int ) -> ( Int, Int, Int )
 determineMinimumBag (Draw ( r, g, b )) ( stateR, stateG, stateB ) =
     ( max r stateR
@@ -117,6 +109,22 @@ determineMinimumBag (Draw ( r, g, b )) ( stateR, stateG, stateB ) =
 toList : ( Int, Int, Int ) -> List Int
 toList ( r, g, b ) =
     [ r, g, b ]
+
+
+parse : String -> List Game
+parse input =
+    input
+        |> String.trim
+        |> split "\n"
+        |> List.map parseGame
+
+
+solvePart1 : ( Int, Int, Int ) -> List Game -> Int
+solvePart1 max games =
+    games
+        |> List.filter (validGame max)
+        |> List.map (\(Game ( n, _ )) -> n)
+        |> List.sum
 
 
 solvePart2 : List Game -> Int
@@ -132,11 +140,3 @@ solvePart2 games =
         |> List.map toList
         |> List.map List.product
         |> List.sum
-
-
-parse : String -> List Game
-parse input =
-    input
-        |> String.trim
-        |> split "\n"
-        |> List.map parseGame
