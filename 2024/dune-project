@@ -1,0 +1,27 @@
+(lang dune 3.16)
+
+(name aoc_2024)
+
+(generate_opam_files true)
+
+(source
+ (github sechmann/advent_of_code))
+
+(authors "Vegar Sechmann Molvig")
+
+(maintainers "Vegar Sechmann Molvig")
+
+(license ../LICENSE)
+
+(documentation https://not.yet.probably.never)
+
+(package
+ (name aoc_2024)
+ (synopsis "Advent of Code 2024")
+ (description "Advent of Code 2024, written in OCaml")
+ (depends ocaml dune)
+ (tags
+  ("advent_of_code" "ocaml" "aoc")))
+
+(using menhir 3.0)
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
